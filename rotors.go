@@ -16,7 +16,7 @@ type Rotor struct {
 	WillRotate       bool // Will the rotor rotate on the next keypress or stay static. Important for the turnover mechanism
 }
 
-// TestRotor creates a rotor with straight through wiring
+// TestRotor creates a rotor with straight through wiring, a turnover point at Z, no offset on the alphabet ring and default indicator showing A when inserted
 func TestRotor() Rotor {
 
 	wiring := [26]string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
