@@ -3,5 +3,5 @@ A Golang implementation of an Enigma machine. Designed to understand how the mac
 
 Still a working in progress. Current status: 
 
-- Working rotor mechanics. Although it is WRONG! Its rotating the wiring instead of the alphabet ring. 
+- Working rotor mechanics. Although it is WRONG! Its rotating based on the wiring instead of the alphabet ring. 
   The mechanics are right, just need to adjust to add the relationship between the ring and the wiring
