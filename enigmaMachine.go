@@ -61,6 +61,8 @@ func (machine *EnigmaMachine) SetRotorPosition(rotorNumber int, startPos rune) {
 // RotateRotors rotates the rotors in accordance with the setup
 func (machine *EnigmaMachine) RotateRotors() error {
 
+	// TODO: Add test for double turnover
+
 	// A machine must have at least 3 rotors to be valid. Check for that here
 	if len(machine.rotors) < 3 {
 		return errors.New("Not enough rotors installed in the machine")
