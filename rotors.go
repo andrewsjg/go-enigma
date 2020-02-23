@@ -6,10 +6,10 @@ package main
 // Rotor type represents an enigma machine rotor
 type Rotor struct {
 	wiring        [26]string
-	ringSetting   int
+	ringOffset    int
 	TurnOverPoint string
 
-	CurrentInputTerminal string
+	CurrentInputTerminal string // Change to current indicator?
 	WillRotate           bool
 }
 

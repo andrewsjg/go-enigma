@@ -124,3 +124,6 @@ func sliceIndex(limit int, predicate func(i int) bool) int {
 }
 
 
+func toChar(i int) rune {
+    return rune('A' - 1 + i)
+}
