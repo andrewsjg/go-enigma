@@ -34,7 +34,7 @@ func (machine *EnigmaMachine) RotateRotors() error {
 
 	// DEBUG: Print the rotor state
 	for _,rotor := range machine.rotors {
-		fmt.Printf("%s,",rotor.CurrentInputTerminal)
+		fmt.Printf("%s ",rotor.CurrentInputTerminal)
 	}
 	fmt.Println()
 
@@ -43,14 +43,15 @@ func (machine *EnigmaMachine) RotateRotors() error {
 
 	for rotorNum,rotor := range machine.rotors {
 
-		if rotor.CurrentInputTerminal == rotor.TurnoverPoint {
-			if rotoNum + 1 < len(machine.rotors) {
-				machine.rotor[rotorNum + 1].WillRotate	= true
+		if (rotor.CurrentInputTerminal == rotor.TurnOverPoint) && rotor.WillRotate {
+			if rotorNum + 1 < len(machine.rotors) {
+				machine.rotors[rotorNum + 1].WillRotate	= true
 			}
 		}
 
 		if rotor.WillRotate {
 			rotor.CurrentInputTerminal = getNextInputTerminal(*rotor,rotor.CurrentInputTerminal)
+			rotor.WillRotate = false
 		}
 
 	}

@@ -40,15 +40,12 @@ func TestRotateRotors(t *testing.T) {
 		t.Errorf("Second Rotor Turnover failed. Current input terminal is wrong. Expected B, got %s",em.rotors[1].CurrentInputTerminal)
 	}
 
-	fmt.Println("Rotating second rotor")
 	// Cause the second rotor to rotate the way around
 	for i := 1; i <len(em.rotors[0].wiring);i++ {
 		for j := 1;j < len(em.rotors[0].wiring);j++ {
 			em.RotateRotors()
 		}
 	}
-
-	
 
 	if em.rotors[1].CurrentInputTerminal != "Z" {
 		t.Errorf("Second Rotor Turnover failed. Current input terminal is wrong. Expected Z, got %s",em.rotors[1].CurrentInputTerminal)
@@ -64,11 +61,27 @@ func TestRotateRotors(t *testing.T) {
 	for i := 1; i <len(em.rotors[0].wiring);i++ {
 		em.RotateRotors()
 	}
+	em.RotateRotors()
 
-	fmt.Println("Rotating second rotor again")
-	//Move the second rotor again and check the third rotor changes
-	for i := 1; i <len(em.rotors[0].wiring);i++ {
-		em.RotateRotors()
+	// Check the third rotor has rotated 
+	if em.rotors[2].CurrentInputTerminal != "B" {
+		t.Errorf("The third rotor should have rotated but it didnt. Current input terminal is wrong. Expected B, got %s",em.rotors[2].CurrentInputTerminal)
+	}
+
+	
+	// Check the third rotor has rotated again
+	for i := 0; i <len(em.rotors[0].wiring);i++ {
+		for j := 0;j < len(em.rotors[0].wiring);j++ {
+			em.RotateRotors()
+		}
+	}
+	if em.rotors[2].CurrentInputTerminal != "C" {
+		t.Errorf("The third rotor should have rotated but it didnt. Current input terminal is wrong. Expected C, got %s",em.rotors[2].CurrentInputTerminal)
+	}
+
+	// Final state Check
+	if em.rotors[0].CurrentInputTerminal != "A" && em.rotors[1].CurrentInputTerminal != "A" && em.rotors[1].CurrentInputTerminal != "C" {
+		t.Errorf("Inconsistent machine state. Rotors show: %s,%s,%s Expected: A,A,C",em.rotors[0].CurrentInputTerminal,em.rotors[1].CurrentInputTerminal,em.rotors[2].CurrentInputTerminal)
 	}
 
 }
