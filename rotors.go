@@ -9,15 +9,15 @@ type Rotor struct {
 	ringOffset    int
 	TurnOverPoint string
 
-	CurrentInputTerminal string // Change to current indicator?
-	WillRotate           bool
+	CurrentIndicator int // The letter (or number) currently shown in the indicator window. This is how the rotor is rotated relative to the alphabet ring
+	WillRotate       bool
 }
 
 // TestRotor creates a rotor with straight through wiring
 func TestRotor() Rotor {
 
 	wiring := [26]string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
-	r := Rotor{wiring, 1, "Z", "A", false}
+	r := Rotor{wiring, 0, "Z", 1, false}
 
 	return r
 }

@@ -18,4 +18,6 @@ func main() {
 	em := EnigmaMachine{rotors, 1, 1, GenerateMilitaryEntryWheel()}
 
 	em.RotateRotors()
+
+	em.SetRotorPosition(1, 'K')
 }
