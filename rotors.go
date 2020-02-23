@@ -10,13 +10,14 @@ type Rotor struct {
 	TurnOverPoint string
 
 	CurrentInputTerminal string
+	WillRotate           bool
 }
 
 // TestRotor creates a rotor with straight through wiring
 func TestRotor() Rotor {
 	// 1=A,
 	wiring := [26]string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
-	r := Rotor{wiring, 1, "Z", "A"}
+	r := Rotor{wiring, 1, "Z", "A", false}
 
 	return r
 }

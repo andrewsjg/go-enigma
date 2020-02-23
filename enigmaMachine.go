@@ -25,34 +25,42 @@ func (machine *EnigmaMachine) SetRotorPosition(rotorNumber int, startPos string)
 
 // RotateRotors rotates the rotors in accordance with the setup
 func (machine *EnigmaMachine) RotateRotors() error {
-	// The right rotor always rotates. All other rotors only rotate if the rotor to the right of it hits its rotate point
+
 
 	// A machine must have at least 3 rotors to be valid. Check for that here
 	if len(machine.rotors) < 3 {
 		return errors.New("Not enough rotors installed in the machine")
 	}
 
+	// DEBUG: Print the rotor state
+	for _,rotor := range machine.rotors {
+		fmt.Printf("%s,",rotor.CurrentInputTerminal)
+	}
+	fmt.Println()
+
+	// The right most rotor always rotates
+	machine.rotors[RIGHTROTOR].WillRotate = true	
+
 	for rotorNum,rotor := range machine.rotors {
 
 		// Check for the turn over point. The machine will rotate the rotor next to it as it moves past its turnover point
-		if rotor.CurrentInputTerminal == rotor.TurnOverPoint {
+		if (rotor.CurrentInputTerminal == rotor.TurnOverPoint) && rotor.WillRotate {
 			// If this is not the last rotor in the machine, rotate the rotor to the right
-			if rotorNum < len(machine.rotors) {
+			if rotorNum+1 < len(machine.rotors) {
 				nextInputTerminal := getNextInputTerminal(*machine.rotors[rotorNum + 1],machine.rotors[rotorNum + 1].CurrentInputTerminal)
 
 				if nextInputTerminal == "?" {
 					return errors.New("Problem rotating rotor " + string(rotorNum) + ".Got an invalid result for nextInputTerminal")				
 				}
 				machine.rotors[rotorNum + 1].CurrentInputTerminal = nextInputTerminal
+				machine.rotors[rotorNum + 1].WillRotate = true
 			}
 		}
 
-		// The right rotor always rotates.
-		if rotorNum == RIGHTROTOR {
+		if rotor.WillRotate {
 			rotor.CurrentInputTerminal = getNextInputTerminal(*rotor,rotor.CurrentInputTerminal)
 		}
 
-		fmt.Println(rotor.CurrentInputTerminal)
 	}
 
 	return nil
@@ -66,7 +74,7 @@ func getNextInputTerminal(r Rotor, currentInputTerminal string ) string {
 		
 		newIndex := currentIndex + 1
 
-		if newIndex == 27 {
+		if newIndex == 26 {
 			newIndex = 0
 		}
 

@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"testing"
+	"fmt"
+)
 
 
 func TestRotateRotors(t *testing.T) {
@@ -37,5 +40,35 @@ func TestRotateRotors(t *testing.T) {
 		t.Errorf("Second Rotor Turnover failed. Current input terminal is wrong. Expected B, got %s",em.rotors[1].CurrentInputTerminal)
 	}
 
+	fmt.Println("Rotating second rotor")
+	// Cause the second rotor to rotate the way around
+	for i := 1; i <len(em.rotors[0].wiring);i++ {
+		for j := 1;j < len(em.rotors[0].wiring);j++ {
+			em.RotateRotors()
+		}
+	}
+
+	
+
+	if em.rotors[1].CurrentInputTerminal != "Z" {
+		t.Errorf("Second Rotor Turnover failed. Current input terminal is wrong. Expected Z, got %s",em.rotors[1].CurrentInputTerminal)
+	}
+
+	// Check the third rotor hasnt rotated 
+	if em.rotors[2].CurrentInputTerminal != "A" {
+		t.Errorf("The third rotor moved when it shouldnt have. Current input terminal is wrong. Expected A, got %s",em.rotors[2].CurrentInputTerminal)
+	}
+
+	fmt.Println("Rotating second rotor again")
+	//Move the second rotor again and check the third rotor changes
+	for i := 1; i <len(em.rotors[0].wiring);i++ {
+		em.RotateRotors()
+	}
+
+	fmt.Println("Rotating second rotor again")
+	//Move the second rotor again and check the third rotor changes
+	for i := 1; i <len(em.rotors[0].wiring);i++ {
+		em.RotateRotors()
+	}
 
 }
