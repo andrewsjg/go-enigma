@@ -11,7 +11,7 @@ func TestRotateRotors(t *testing.T) {
 	r2 := TestRotor()
 	r3 := TestRotor()
 
-	em := EnigmaMachine{[]*Rotor{&r1,&r2,&r3},1,1}
+	em := EnigmaMachine{[]*Rotor{&r1,&r2,&r3},1,1,GenerateMilitaryEntryWheel()}
 
 	// rotate once
 	em.RotateRotors()

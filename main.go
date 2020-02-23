@@ -15,7 +15,7 @@ func main() {
 
 	rotors := []*Rotor{&rotor1, &rotor2, &rotor3}
 
-	em := EnigmaMachine{rotors, 1, 1}
+	em := EnigmaMachine{rotors, 1, 1, GenerateMilitaryEntryWheel()}
 
 	em.RotateRotors()
 }

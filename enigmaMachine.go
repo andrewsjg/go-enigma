@@ -14,9 +14,41 @@ const RIGHTROTOR = 0
 type EnigmaMachine struct {
 	// 0 = Right most rotor
 	rotors []*Rotor
+	
+	// Not yet implemented
 	plugBoard int
+
+	// Not yet implemented
 	reflector  int
+
+	// This is fixed in a physical machine, but can be changed here to emulate a commercial engima
+	// OR military enigma. They had different entry wheels
+	entrywheel [26]string
+	
 }
+
+//Encrypt some text. This function will strip anything that isnt a letter
+func (machine *EnigmaMachine) Encrypt(plaintext string) string {
+	// The rotors rotate BEFORE the encipherment is done. So rotate the rotors first
+	machine.RotateRotors()
+
+	for _, r := range plaintext {
+		c := string(r)
+		
+		//TODO: Translate C (current letter) through the plugboard here
+
+		// Find where the current letter hits the entrywheel
+		inputLocation := sliceIndex(len(machine.entrywheel), func(i int) bool { return machine.entrywheel[i] == c })
+
+		// Run it through the rotors
+		for _,rotor := range machine.rotors {
+
+		}
+	}
+
+	return ""
+}
+
 
 //SetRotorPosition set a rotor to a position. Used in initial machine setup. 
 func (machine *EnigmaMachine) SetRotorPosition(rotorNumber int, startPos string) {
@@ -91,15 +123,4 @@ func sliceIndex(limit int, predicate func(i int) bool) int {
     return -1
 }
 
-/*
-//Rotate the rotor
-func (rotor *Rotor) Rotate() {
-	rotor.CurrentInputTerminal = (rotor.CurrentInputTerminal % 26) + 1
-
-	if rotor.CurrentInputTerminal == 0 {
-		rotor.CurrentInputTerminal = 1
-	}
-}
-
-*/
 
