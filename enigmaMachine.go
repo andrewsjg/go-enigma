@@ -43,17 +43,9 @@ func (machine *EnigmaMachine) RotateRotors() error {
 
 	for rotorNum,rotor := range machine.rotors {
 
-		// Check for the turn over point. The machine will rotate the rotor next to it as it moves past its turnover point
-		if (rotor.CurrentInputTerminal == rotor.TurnOverPoint) && rotor.WillRotate {
-			// If this is not the last rotor in the machine, rotate the rotor to the right
-			if rotorNum+1 < len(machine.rotors) {
-				nextInputTerminal := getNextInputTerminal(*machine.rotors[rotorNum + 1],machine.rotors[rotorNum + 1].CurrentInputTerminal)
-
-				if nextInputTerminal == "?" {
-					return errors.New("Problem rotating rotor " + string(rotorNum) + ".Got an invalid result for nextInputTerminal")				
-				}
-				machine.rotors[rotorNum + 1].CurrentInputTerminal = nextInputTerminal
-				machine.rotors[rotorNum + 1].WillRotate = true
+		if rotor.CurrentInputTerminal == rotor.TurnoverPoint {
+			if rotoNum + 1 < len(machine.rotors) {
+				machine.rotor[rotorNum + 1].WillRotate	= true
 			}
 		}
 
