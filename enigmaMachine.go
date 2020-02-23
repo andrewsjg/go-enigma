@@ -43,7 +43,9 @@ func (machine *EnigmaMachine) RotateRotors() error {
 
 	for rotorNum,rotor := range machine.rotors {
 
+		// If a rotor is at its turnover point and it will rotate, then trigger a rotate of the rotor to the left
 		if (rotor.CurrentInputTerminal == rotor.TurnOverPoint) && rotor.WillRotate {
+			// Dont attempt to rotate anything if the current rotor is the left most
 			if rotorNum + 1 < len(machine.rotors) {
 				machine.rotors[rotorNum + 1].WillRotate	= true
 			}
@@ -59,6 +61,7 @@ func (machine *EnigmaMachine) RotateRotors() error {
 	return nil
 }
 
+// Helper function to return the next input terminal according to the wiring array
 func getNextInputTerminal(r Rotor, currentInputTerminal string ) string {
 	currentIndex := sliceIndex(len(r.wiring), func(i int) bool { return r.wiring[i] == currentInputTerminal })
 	
@@ -78,6 +81,7 @@ func getNextInputTerminal(r Rotor, currentInputTerminal string ) string {
 	return "?"
 }
 
+// A nifty go like way to find the index of an element in a slice. Thanks Stackoverflow: https://stackoverflow.com/a/18203895
 func sliceIndex(limit int, predicate func(i int) bool) int {
     for i := 0; i < limit; i++ {
         if predicate(i) {
