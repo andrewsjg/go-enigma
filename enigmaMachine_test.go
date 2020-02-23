@@ -4,13 +4,26 @@ import (
 	"testing"
 )
 
+// TestRotor creates a rotor with straight through wiring
+func testRotor() Rotor {
+
+	wiring := [26]string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
+	r := Rotor{wiring, 0, "Z", 1, false}
+
+	return r
+}
+
+// Create test machine with 3 test rotors
+func createTestMachine() EnigmaMachine {
+	r1 := testRotor()
+	r2 := testRotor()
+	r3 := testRotor()
+
+	return EnigmaMachine{[]*Rotor{&r1, &r2, &r3}, 1, 1, GenerateMilitaryEntryWheel()}
+}
+
 func TestSetRotorPosition(t *testing.T) {
-	r1 := TestRotor()
-	r2 := TestRotor()
-	r3 := TestRotor()
-
-	em := EnigmaMachine{[]*Rotor{&r1, &r2, &r3}, 1, 1, GenerateMilitaryEntryWheel()}
-
+	em := createTestMachine()
 	em.SetRotorPosition(1, 'K')
 
 	if em.rotors[1].CurrentIndicator != 11 {
@@ -20,11 +33,7 @@ func TestSetRotorPosition(t *testing.T) {
 
 func TestRotateRotors(t *testing.T) {
 
-	r1 := TestRotor()
-	r2 := TestRotor()
-	r3 := TestRotor()
-
-	em := EnigmaMachine{[]*Rotor{&r1, &r2, &r3}, 1, 1, GenerateMilitaryEntryWheel()}
+	em := createTestMachine()
 
 	// rotate once
 	em.RotateRotors()
