@@ -56,7 +56,6 @@ func TestRotateRotors(t *testing.T) {
 		t.Errorf("The third rotor moved when it shouldnt have. Current input terminal is wrong. Expected A, got %s",em.rotors[2].CurrentInputTerminal)
 	}
 
-	fmt.Println("Rotating second rotor again")
 	//Move the second rotor again and check the third rotor changes
 	for i := 1; i <len(em.rotors[0].wiring);i++ {
 		em.RotateRotors()
