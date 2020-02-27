@@ -20,7 +20,7 @@ type Rotor struct {
 func TestRotor() Rotor {
 
 	wiring := [26]string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
-	r := Rotor{wiring, 0, "Z", 1, false}
+	r := Rotor{wiring, 0, "Z", 0, false}
 
 	return r
 }

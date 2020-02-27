@@ -17,7 +17,8 @@ func main() {
 
 	em := EnigmaMachine{rotors, 1, 1, GenerateMilitaryEntryWheel()}
 
-	em.RotateRotors()
+	em.Encrypt("AAA")
+	//em.RotateRotors()
 
-	em.SetRotorPosition(1, 'K')
+	//em.SetRotorPosition(1, 'K')
 }
