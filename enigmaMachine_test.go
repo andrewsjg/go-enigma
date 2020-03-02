@@ -10,14 +10,51 @@ func createTestMachine() EnigmaMachine {
 	r2 := TestRotor()
 	r3 := TestRotor()
 
-	return EnigmaMachine{[]*Rotor{&r1, &r2, &r3}, 1, 1, GenerateMilitaryEntryWheel()}
+	return EnigmaMachine{[]*Rotor{&r1, &r2, &r3}, 1, GenerateReflectorA(), GenerateMilitaryInputRotor()}
+}
+
+// Create test machine with 3 test rotors
+func createMilitaryMachine() EnigmaMachine {
+	r1 := GenerateRotorI()
+	r2 := GenerateRotorII()
+	r3 := GenerateRotorIII()
+
+	return EnigmaMachine{[]*Rotor{&r3, &r2, &r1}, 1, GenerateReflectorB(), GenerateMilitaryInputRotor()}
+}
+
+func TestEncryption(t *testing.T) {
+	em := createMilitaryMachine()
+
+	em.SetRotorPosition(0, 'A')
+	em.SetRotorPosition(1, 'A')
+	em.SetRotorPosition(2, 'A')
+
+	enc := em.Encrypt("AAAAA") // BDZGO
+
+	if enc != "BDZGO" {
+		t.Errorf("Encryption Failed. Expected BDZGO, got %s ", enc)
+	}
+}
+
+func TestDecryption(t *testing.T) {
+	em := createMilitaryMachine()
+
+	em.SetRotorPosition(0, 'A')
+	em.SetRotorPosition(1, 'A')
+	em.SetRotorPosition(2, 'A')
+
+	enc := em.Encrypt("BDZGO") // BDZGO
+
+	if enc != "AAAAA" {
+		t.Errorf("Encryption Failed. Expected AAAAA, got %s ", enc)
+	}
 }
 
 func TestSetRotorPosition(t *testing.T) {
 	em := createTestMachine()
 	em.SetRotorPosition(1, 'K')
 
-	if em.rotors[1].CurrentIndicator != 11 {
+	if em.rotors[1].CurrentIndicator != 10 {
 		t.Errorf("Start position of rotor 1 not set correctly. Expected 11, got %d", em.rotors[1].CurrentIndicator)
 	}
 }

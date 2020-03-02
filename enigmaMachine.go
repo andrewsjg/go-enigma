@@ -4,7 +4,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 	"unicode"
 )
@@ -20,12 +19,11 @@ type EnigmaMachine struct {
 	// Not yet implemented
 	plugBoard int
 
-	// Not yet implemented
-	reflector int
+	reflector [26]int
 
 	// This is fixed in a physical machine, but can be changed here to emulate a commercial engima
 	// OR military enigma. They had different entry wheels
-	entrywheel [26]string
+	inputRotor [26]string
 }
 
 //Encrypt some text. This function will strip anything that isnt a letter
@@ -33,6 +31,8 @@ func (machine *EnigmaMachine) Encrypt(plaintext string) string {
 
 	// Make everything uppercase
 	plaintext = strings.ToUpper(plaintext)
+	cipherText := ""
+	cIdx := -1
 
 	for _, r := range plaintext {
 
@@ -49,35 +49,60 @@ func (machine *EnigmaMachine) Encrypt(plaintext string) string {
 			// For this implementation we can also make any wiring on the entry wheel.
 			// This gives us the terminal on the entry wheel so we know where the signal enters the first (right most) rotor.
 
-			inputIndex := sliceIndex(len(machine.entrywheel), func(i int) bool { return machine.entrywheel[i] == inputLetter })
-			fmt.Printf("Input letter: %s, InputIndex: %d\n", inputLetter, inputIndex)
+			inputIndex := (sliceIndex(len(machine.inputRotor), func(i int) bool { return machine.inputRotor[i] == inputLetter }))
+
 			// Send the signal through the rotors
 
-			for rNum, rotor := range machine.rotors {
-				//Find the ciphertext letter in the wiring array. Use the alphabet ring offset to find the index
-				cIdx := (inputIndex + rotor.ringOffset + rotor.CurrentIndicator) % 26
+			var outputLetter string
 
-				cipherTextLetter := rotor.wiring[cIdx]
+			for _, rotor := range machine.rotors {
 
-				// InputIndex for the next rotor
-				inputIndex = cIdx
+				// Find the ciphertext letter in the wiring array. Use the alphabet ring offset and the current position of the rotort find the letter output by
+				// the rotors wiring
+				cIdx = (inputIndex - rotor.ringOffset + rotor.CurrentIndicator) % 26
+				outputLetter = rotor.wiring[cIdx]
 
-				fmt.Printf("Rotor Num: %d, Current Indicator: %d, Wiring input: %d, Output: %s\n", rNum+1, rotor.CurrentIndicator, cIdx, cipherTextLetter)
+				// The input for the next rotor is the output index the letter based on the rotor wiring.
+				// Adding 26 fixes for cases where the offset and indicator generate negative numbers
+				inputIndex = (toAlphaNum(outputLetter) + rotor.ringOffset - rotor.CurrentIndicator + 26) % 26
 
 			}
 
-			fmt.Println()
+			// Pass the letter through the reflector
+			inputIndex = machine.reflector[inputIndex]
+
+			// Go back through the rotors from left to right. Use the inverse of the wiring to decode
+			// This is repetative code, but I like it because it breaks the encryption stages into the same
+			// stages as the physical machine. Its nice to see each step distinctly.
+
+			for i := range machine.rotors {
+				rotor := machine.rotors[len(machine.rotors)-1-i]
+
+				// I think I can use my encodeLeft logic here instead. But this was easier to trace
+				wiringInverse := generateInverseWiring(rotor.wiring)
+
+				cIdx := (inputIndex + rotor.ringOffset + rotor.CurrentIndicator) % 26
+
+				outputLetter = wiringInverse[cIdx]
+				inputIndex = (toAlphaNum(outputLetter) + rotor.ringOffset - rotor.CurrentIndicator + 26) % 26
+
+			}
+
+			// Out the input rotor for the Final Encipherment. We do this because we can change the input rotor in our model.
+			// There were different input rotor configurations between some variations of the machines. Particularly the input wiring
+			// for of the commerical and military machines. These were a fixed part of the machine and not interchangeable.
+			cipherText = cipherText + machine.inputRotor[inputIndex]
 		}
 
 	}
 
-	return ""
+	return cipherText
 }
 
 //SetRotorPosition set a rotor to a position. Used in initial machine setup.
 func (machine *EnigmaMachine) SetRotorPosition(rotorNumber int, startPos rune) {
 	p := unicode.ToUpper(startPos)
-	pos := int(p) - 64
+	pos := int(p) - 65
 
 	machine.rotors[rotorNumber].CurrentIndicator = pos
 }
@@ -91,13 +116,6 @@ func (machine *EnigmaMachine) RotateRotors() error {
 	if len(machine.rotors) < 3 {
 		return errors.New("Not enough rotors installed in the machine")
 	}
-
-	/* DEBUG: Print the rotor state
-	for _, rotor := range machine.rotors {
-		c := toChar(rotor.CurrentIndicator)
-		fmt.Printf("%s ", string(c))
-	}
-	fmt.Println() */
 
 	// The right most rotor always rotates
 	machine.rotors[RIGHTROTOR].WillRotate = true
@@ -158,4 +176,18 @@ func sliceIndex(limit int, predicate func(i int) bool) int {
 //toChar takes and int from 0-25 and returns the letter at that position in the alphabet
 func toChar(i int) rune {
 	return rune('A' + i)
+}
+
+func toAlphaNum(s string) int {
+	outVal := -1
+
+	for _, r := range s {
+		outVal = int(r)
+
+		if r >= 65 && r <= 90 {
+			outVal = int(r) - 65
+		}
+	}
+
+	return outVal
 }

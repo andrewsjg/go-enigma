@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -9,16 +11,30 @@ func main() {
 
 	log.Info("Running Example Machine 1")
 
-	rotor1 := TestRotor()
-	rotor2 := TestRotor()
-	rotor3 := TestRotor()
+	rotor1 := GenerateRotorI()
+	rotor2 := GenerateRotorII()
+	rotor3 := GenerateRotorIII()
 
-	rotors := []*Rotor{&rotor1, &rotor2, &rotor3}
+	rotors := []*Rotor{&rotor3, &rotor2, &rotor1}
 
-	em := EnigmaMachine{rotors, 1, 1, GenerateMilitaryEntryWheel()}
+	em := EnigmaMachine{rotors, 0, GenerateReflectorB(), GenerateMilitaryInputRotor()}
 
-	em.Encrypt("AAA")
-	//em.RotateRotors()
+	// Some testing for the rotor encoding logic.
+	log.Println("Testing Rotor Encoding")
+	fmt.Println("Right: " + em.rotors[0].EncodeRight("A"))
+	fmt.Println("Left:  " + em.rotors[0].EncodeLeft("A"))
 
-	//em.SetRotorPosition(1, 'K')
+	log.Println("Testing Encryption")
+	em.SetRotorPosition(0, 'A')
+	em.SetRotorPosition(1, 'A')
+	em.SetRotorPosition(2, 'A')
+
+	fmt.Println("ENCRYPTED: " + em.Encrypt("AAAAA")) // This should produce  BDZGO
+
+	em.SetRotorPosition(0, 'A')
+	em.SetRotorPosition(1, 'A')
+	em.SetRotorPosition(2, 'A')
+
+	fmt.Println("DECRYPTED: " + em.Encrypt("BDZGO")) // This should produce AAAAA
+
 }

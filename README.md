@@ -3,4 +3,5 @@ A Golang implementation of an Enigma machine. Designed to understand how the mac
 
 Still a working in progress. Current status: 
 
-- Working rotor mechanics
+- Working machine without plugboard
+- Some basic code tidy up / refactoring required
