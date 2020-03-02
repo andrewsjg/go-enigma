@@ -43,7 +43,7 @@ func TestDecryption(t *testing.T) {
 	em.SetRotorPosition(1, 'A')
 	em.SetRotorPosition(2, 'A')
 
-	enc := em.Encrypt("BDZGO") // BDZGO
+	enc := em.Encrypt("BDZGO") // AAAAA
 
 	if enc != "AAAAA" {
 		t.Errorf("Encryption Failed. Expected AAAAA, got %s ", enc)
