@@ -1,7 +1,9 @@
 # go-enigma
 A Golang implementation of an Enigma machine. Designed to understand how the machine worked
 
-Still a working in progress. Current status: 
+Current Status: 
 
-- Working machine without plugboard
-- Some basic code tidy up / refactoring required
+- Fully working machine 
+- Potential tidy up on the rotor encoding to do
+- Print longer messages in 5 letter groups
+- Write tests for double turnover scenarios
