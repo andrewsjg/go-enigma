@@ -10,7 +10,14 @@ func createTestMachine() EnigmaMachine {
 	r2 := TestRotor()
 	r3 := TestRotor()
 
-	return EnigmaMachine{[]*Rotor{&r1, &r2, &r3}, 1, GenerateReflectorA(), GenerateMilitaryInputRotor()}
+	var rotors RotorSet
+
+	rotors.left = &r1
+	rotors.middle = &r2
+	rotors.right = &r3
+
+	straightThroughPlugBoard := Plugboard{map[string]string{"A": "A"}}
+	return EnigmaMachine{rotors, []string{"A", "A", "A"}, straightThroughPlugBoard, GenerateReflectorA(), GenerateMilitaryInputRotor()}
 }
 
 // Create test machine with 3 test rotors
@@ -19,15 +26,23 @@ func createMilitaryMachine() EnigmaMachine {
 	r2 := GenerateRotorII()
 	r3 := GenerateRotorIII()
 
-	return EnigmaMachine{[]*Rotor{&r3, &r2, &r1}, 1, GenerateReflectorB(), GenerateMilitaryInputRotor()}
+	var rotors RotorSet
+
+	rotors.left = &r1
+	rotors.middle = &r2
+	rotors.right = &r3
+
+	straightThroughPlugBoard := Plugboard{map[string]string{"A": "A"}}
+
+	return EnigmaMachine{rotors, []string{"A", "A", "A"}, straightThroughPlugBoard, GenerateReflectorB(), GenerateMilitaryInputRotor()}
 }
 
 func TestEncryption(t *testing.T) {
 	em := createMilitaryMachine()
 
-	em.SetRotorPosition(0, 'A')
-	em.SetRotorPosition(1, 'A')
-	em.SetRotorPosition(2, 'A')
+	em.SetRotorPosition("left", 'A')
+	em.SetRotorPosition("middle", 'A')
+	em.SetRotorPosition("right", 'A')
 
 	enc := em.Encrypt("AAAAA") // BDZGO
 
@@ -39,9 +54,9 @@ func TestEncryption(t *testing.T) {
 func TestDecryption(t *testing.T) {
 	em := createMilitaryMachine()
 
-	em.SetRotorPosition(0, 'A')
-	em.SetRotorPosition(1, 'A')
-	em.SetRotorPosition(2, 'A')
+	em.SetRotorPosition("left", 'A')
+	em.SetRotorPosition("middle", 'A')
+	em.SetRotorPosition("right", 'A')
 
 	enc := em.Encrypt("BDZGO") // AAAAA
 
@@ -52,10 +67,10 @@ func TestDecryption(t *testing.T) {
 
 func TestSetRotorPosition(t *testing.T) {
 	em := createTestMachine()
-	em.SetRotorPosition(1, 'K')
+	em.SetRotorPosition("middle", 'K')
 
-	if em.rotors[1].CurrentIndicator != 10 {
-		t.Errorf("Start position of rotor 1 not set correctly. Expected 11, got %d", em.rotors[1].CurrentIndicator)
+	if em.rotors.middle.CurrentIndicator != 10 {
+		t.Errorf("Start position of rotor 1 not set correctly. Expected 11, got %d", em.rotors.middle.CurrentIndicator)
 	}
 }
 
@@ -66,8 +81,8 @@ func TestRotateRotors(t *testing.T) {
 	// rotate once
 	em.RotateRotors()
 
-	if string(toChar(em.rotors[0].CurrentIndicator)) != "B" {
-		t.Errorf("Rotate failed. Current indicator is wrong. Expected B, got %s", string(toChar(em.rotors[0].CurrentIndicator)))
+	if string(toChar(em.rotors.right.CurrentIndicator)) != "B" {
+		t.Errorf("Rotate failed. Current indicator is wrong. Expected B, got %s", string(toChar(em.rotors.right.CurrentIndicator)))
 	}
 
 	// Rotate round to the last position
@@ -75,18 +90,18 @@ func TestRotateRotors(t *testing.T) {
 		em.RotateRotors()
 	}
 
-	if string(toChar(em.rotors[0].CurrentIndicator)) != "Z" {
-		t.Errorf("Rotate failed. Current indicator is wrong. Expected Z, got %s", string(toChar(em.rotors[0].CurrentIndicator)))
+	if string(toChar(em.rotors.right.CurrentIndicator)) != "Z" {
+		t.Errorf("Rotate failed. Current indicator is wrong. Expected Z, got %s", string(toChar(em.rotors.right.CurrentIndicator)))
 	}
 
 	// Rotate one past the last position. This tests the Modulo arithmetic and array bounds checks and turnover of the 2nd rotor
 	em.RotateRotors()
-	if string(toChar(em.rotors[0].CurrentIndicator)) != "A" {
-		t.Errorf("Rotate failed. Current indicator is wrong. Expected A, got %s", string(toChar(em.rotors[0].CurrentIndicator)))
+	if string(toChar(em.rotors.right.CurrentIndicator)) != "A" {
+		t.Errorf("Rotate failed. Current indicator is wrong. Expected A, got %s", string(toChar(em.rotors.right.CurrentIndicator)))
 	}
 
-	if string(toChar(em.rotors[1].CurrentIndicator)) != "B" {
-		t.Errorf("Second Rotor Turnover failed. Current indicator is wrong. Expected B, got %s", string(toChar(em.rotors[0].CurrentIndicator)))
+	if string(toChar(em.rotors.middle.CurrentIndicator)) != "B" {
+		t.Errorf("Second Rotor Turnover failed. Current indicator is wrong. Expected B, got %s", string(toChar(em.rotors.middle.CurrentIndicator)))
 	}
 
 	// Cause the second rotor to rotate the way around
@@ -96,13 +111,13 @@ func TestRotateRotors(t *testing.T) {
 		}
 	}
 
-	if string(toChar(em.rotors[1].CurrentIndicator)) != "Z" {
-		t.Errorf("Second Rotor Turnover failed. Current indicator is wrong. Expected Z, got %s", string(toChar(em.rotors[1].CurrentIndicator)))
+	if string(toChar(em.rotors.middle.CurrentIndicator)) != "Z" {
+		t.Errorf("Second Rotor Turnover failed. Current indicator is wrong. Expected Z, got %s", string(toChar(em.rotors.middle.CurrentIndicator)))
 	}
 
 	// Check the third rotor hasnt rotated
-	if string(toChar(em.rotors[2].CurrentIndicator)) != "A" {
-		t.Errorf("The third rotor moved when it shouldnt have. Current indicator is wrong. Expected A, got %s", string(toChar(em.rotors[2].CurrentIndicator)))
+	if string(toChar(em.rotors.left.CurrentIndicator)) != "A" {
+		t.Errorf("The third rotor moved when it shouldnt have. Current indicator is wrong. Expected A, got %s", string(toChar(em.rotors.left.CurrentIndicator)))
 	}
 
 	//Move the second rotor again and check the third rotor changes
@@ -112,8 +127,8 @@ func TestRotateRotors(t *testing.T) {
 	em.RotateRotors()
 
 	// Check the third rotor has rotated
-	if string(toChar(em.rotors[2].CurrentIndicator)) != "B" {
-		t.Errorf("The third rotor should have rotated but it didnt. Current input terminal is wrong. Expected B, got %s", string(toChar(em.rotors[2].CurrentIndicator)))
+	if string(toChar(em.rotors.left.CurrentIndicator)) != "B" {
+		t.Errorf("The third rotor should have rotated but it didnt. Current input terminal is wrong. Expected B, got %s", string(toChar(em.rotors.left.CurrentIndicator)))
 	}
 
 	// Check the third rotor has rotated again
@@ -123,13 +138,13 @@ func TestRotateRotors(t *testing.T) {
 		}
 	}
 
-	if string(toChar(em.rotors[2].CurrentIndicator)) != "C" {
-		t.Errorf("The third rotor should have rotated but it didnt. Current indicator is wrong. Expected C, got %s", string(toChar(em.rotors[2].CurrentIndicator)))
+	if string(toChar(em.rotors.left.CurrentIndicator)) != "C" {
+		t.Errorf("The third rotor should have rotated but it didnt. Current indicator is wrong. Expected C, got %s", string(toChar(em.rotors.left.CurrentIndicator)))
 	}
 
 	// Final state Check
-	if string(toChar(em.rotors[0].CurrentIndicator)) != "A" && string(toChar(em.rotors[1].CurrentIndicator)) != "A" && string(toChar(em.rotors[2].CurrentIndicator)) != "C" {
-		t.Errorf("Inconsistent machine state. Rotors show: %s,%s,%s Expected: A,A,C", string(toChar(em.rotors[0].CurrentIndicator)), string(toChar(em.rotors[1].CurrentIndicator)), string(toChar(em.rotors[2].CurrentIndicator)))
+	if string(toChar(em.rotors.right.CurrentIndicator)) != "A" && string(toChar(em.rotors.middle.CurrentIndicator)) != "A" && string(toChar(em.rotors.left.CurrentIndicator)) != "C" {
+		t.Errorf("Inconsistent machine state. Rotors show: %s,%s,%s Expected: A,A,C", string(toChar(em.rotors.right.CurrentIndicator)), string(toChar(em.rotors.middle.CurrentIndicator)), string(toChar(em.rotors.left.CurrentIndicator)))
 	}
 
 }

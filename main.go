@@ -18,9 +18,9 @@ func main() {
 
 	var rotors RotorSet
 
-	rotors.left = &rotor1
+	rotors.left = &rotor3
 	rotors.middle = &rotor2
-	rotors.right = &rotor3
+	rotors.right = &rotor1
 
 	//Empty straight through plugboard
 	straightThroughPlugBoard := Plugboard{map[string]string{"A": "A"}}
