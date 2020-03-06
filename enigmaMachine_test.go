@@ -65,6 +65,28 @@ func TestDecryption(t *testing.T) {
 	}
 }
 
+// This tests that any key will encrypt and decrypt properly
+func TestEncryptDecrypt(t *testing.T) {
+	em := createMilitaryMachine()
+
+	em.SetRotorPosition("left", 'A')
+	em.SetRotorPosition("middle", 'A')
+	em.SetRotorPosition("right", 'A')
+
+	enc := em.Encrypt("AAAA") // AAAAA
+
+	em.SetRotorPosition("left", 'A')
+	em.SetRotorPosition("middle", 'A')
+	em.SetRotorPosition("right", 'A')
+
+	enc = em.Encrypt(enc)
+
+	if enc != "AAAA" {
+		t.Errorf("Encryption/Decryption Failed. Expected AAAAA, got %s ", enc)
+	}
+
+}
+
 func TestSetRotorPosition(t *testing.T) {
 	em := createTestMachine()
 	em.SetRotorPosition("middle", 'K')
