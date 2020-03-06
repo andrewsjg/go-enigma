@@ -32,6 +32,7 @@ type Reflector struct {
 	wiring [26]int
 }
 
+//InputRotor Represents an Input Rotor
 type InputRotor struct {
 	wiring [26]string
 }
