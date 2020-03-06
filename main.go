@@ -11,29 +11,37 @@ func main() {
 
 	log.Info("Running Example Machine 1")
 
-	rotor1 := GenerateRotorI()
+	// Rotor 1 is the left most rotor and rotor 3 is the right most rotor
+	rotor1 := GenerateRotorIII()
 	rotor2 := GenerateRotorII()
-	rotor3 := GenerateRotorIII()
+	rotor3 := GenerateRotorI()
 
-	rotors := []*Rotor{&rotor3, &rotor2, &rotor1}
+	var rotors RotorSet
 
-	em := EnigmaMachine{rotors, 0, GenerateReflectorB(), GenerateMilitaryInputRotor()}
+	rotors.left = &rotor1
+	rotors.middle = &rotor2
+	rotors.right = &rotor3
+
+	//Empty straight through plugboard
+	straightThroughPlugBoard := Plugboard{map[string]string{"A": "A"}}
+
+	em := EnigmaMachine{rotors, []string{"A", "A", "A"}, straightThroughPlugBoard, GenerateReflectorB(), GenerateMilitaryInputRotor()}
 
 	// Some testing for the rotor encoding logic.
 	log.Println("Testing Rotor Encoding")
-	fmt.Println("Right: " + em.rotors[0].EncodeRight("A"))
-	fmt.Println("Left:  " + em.rotors[0].EncodeLeft("A"))
+	fmt.Println("Right: " + em.rotors.right.EncodeRight("A"))
+	fmt.Println("Left:  " + em.rotors.right.EncodeLeft("A"))
 
 	log.Println("Testing Encryption")
-	em.SetRotorPosition(0, 'A')
-	em.SetRotorPosition(1, 'A')
-	em.SetRotorPosition(2, 'A')
+	em.SetRotorPosition("left", 'A')
+	em.SetRotorPosition("middle", 'A')
+	em.SetRotorPosition("right", 'A')
 
 	fmt.Println("ENCRYPTED: " + em.Encrypt("AAAAA")) // This should produce  BDZGO
 
-	em.SetRotorPosition(0, 'A')
-	em.SetRotorPosition(1, 'A')
-	em.SetRotorPosition(2, 'A')
+	em.SetRotorPosition("left", 'A')
+	em.SetRotorPosition("middle", 'A')
+	em.SetRotorPosition("right", 'A')
 
 	fmt.Println("DECRYPTED: " + em.Encrypt("BDZGO")) // This should produce AAAAA
 

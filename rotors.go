@@ -18,6 +18,24 @@ type Rotor struct {
 	WillRotate       bool // Will the rotor rotate on the next keypress or stay static. Important for the turnover mechanism
 }
 
+// RotorSet is an abstraction to make it easier to visualise were the rotors are physically
+// located in the machine
+type RotorSet struct {
+	left   *Rotor
+	middle *Rotor
+	right  *Rotor
+	forth  *Rotor // For machines that had four rotor
+}
+
+// Reflector represents the fixed reflector
+type Reflector struct {
+	wiring [26]int
+}
+
+type InputRotor struct {
+	wiring [26]string
+}
+
 // TestRotor creates a rotor with straight through wiring, a turnover point at Z, no offset on the alphabet ring and default indicator showing A when inserted
 func TestRotor() Rotor {
 
@@ -90,25 +108,29 @@ func GenerateRotorV() Rotor {
 }
 
 // GenerateCommercialInputRotor builds a commercial entry wheel
-func GenerateCommercialInputRotor() [26]string {
-	return [26]string{"Q", "W", "E", "R", "T", "Z", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Y", "X", "C", "V", "B", "N", "M"}
+func GenerateCommercialInputRotor() InputRotor {
+	ir := InputRotor{[26]string{"Q", "W", "E", "R", "T", "Z", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Y", "X", "C", "V", "B", "N", "M"}}
+	return ir
 }
 
 // GenerateMilitaryInputRotor builds a commercial entry wheel
-func GenerateMilitaryInputRotor() [26]string {
-	return [26]string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
+func GenerateMilitaryInputRotor() InputRotor {
+	ir := InputRotor{[26]string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}}
+	return ir
 }
 
 // GenerateReflectorA generates a type A reflector. The each array index represents a letter of the alphabet
 // The value is the number of the letter that is reflected back
-func GenerateReflectorA() [26]int {
-	return [26]int{4, 9, 12, 25, 0, 11, 24, 23, 21, 1, 22, 5, 2, 17, 16, 20, 14, 13, 19, 18, 15, 8, 10, 7, 6, 3}
+func GenerateReflectorA() Reflector {
+	ref := Reflector{[26]int{4, 9, 12, 25, 0, 11, 24, 23, 21, 1, 22, 5, 2, 17, 16, 20, 14, 13, 19, 18, 15, 8, 10, 7, 6, 3}}
+	return ref
 
 }
 
 // GenerateReflectorB generates a type B reflector. The each array index represents a letter of the alphabet
-func GenerateReflectorB() [26]int {
-	return [26]int{24, 17, 20, 7, 16, 18, 11, 3, 15, 23, 13, 6, 14, 10, 12, 8, 4, 1, 5, 25, 2, 22, 21, 9, 0, 19}
+func GenerateReflectorB() Reflector {
+	ref := Reflector{[26]int{24, 17, 20, 7, 16, 18, 11, 3, 15, 23, 13, 6, 14, 10, 12, 8, 4, 1, 5, 25, 2, 22, 21, 9, 0, 19}}
+	return ref
 
 }
 

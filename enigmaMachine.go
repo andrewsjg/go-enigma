@@ -1,6 +1,6 @@
 package main
 
-// Prototype 1
+// Prototype 2
 
 import (
 	"errors"
@@ -9,25 +9,43 @@ import (
 )
 
 // RIGHTROTOR - The right most rotor in the machine is always at array position 0
+// This is a bit counter inutative when looking at the array.
 const RIGHTROTOR = 0
 
-// EnigmaMachine contains all the parts of the machine
+//Plugboard repesents the plugboard wiring
+type Plugboard struct {
+	// or int? or Rune?
+	wiring map[string]string
+}
+
+// EnigmaMachine represents an Enigma machine using the abstracted types for each of the
+// components
 type EnigmaMachine struct {
-	// 0 = Right most rotor
-	rotors []*Rotor
+	rotors RotorSet
+
+	rotorStartPosition []string
 
 	// Not yet implemented
-	plugBoard int
+	plugBoard Plugboard
 
-	reflector [26]int
+	reflector Reflector
 
 	// This is fixed in a physical machine, but can be changed here to emulate a commercial engima
 	// OR military enigma. They had different entry wheels
-	inputRotor [26]string
+	inputRotor InputRotor
 }
 
-//Encrypt some text. This function will strip anything that isnt a letter
 func (machine *EnigmaMachine) Encrypt(plaintext string) string {
+
+	var rotors []*Rotor
+
+	// Construct the rotors array from the machines rotors
+	if machine.rotors.forth != nil {
+		rotors = []*Rotor{machine.rotors.right, machine.rotors.middle, machine.rotors.left, machine.rotors.forth}
+
+	} else {
+		rotors = []*Rotor{machine.rotors.right, machine.rotors.middle, machine.rotors.left}
+	}
 
 	// Make everything uppercase
 	plaintext = strings.ToUpper(plaintext)
@@ -49,13 +67,13 @@ func (machine *EnigmaMachine) Encrypt(plaintext string) string {
 			// For this implementation we can also make any wiring on the entry wheel.
 			// This gives us the terminal on the entry wheel so we know where the signal enters the first (right most) rotor.
 
-			inputIndex := (sliceIndex(len(machine.inputRotor), func(i int) bool { return machine.inputRotor[i] == inputLetter }))
+			inputIndex := (sliceIndex(len(machine.inputRotor.wiring), func(i int) bool { return machine.inputRotor.wiring[i] == inputLetter }))
 
 			// Send the signal through the rotors
 
 			var outputLetter string
 
-			for _, rotor := range machine.rotors {
+			for _, rotor := range rotors {
 
 				// Find the ciphertext letter in the wiring array. Use the alphabet ring offset and the current position of the rotort find the letter output by
 				// the rotors wiring
@@ -69,14 +87,14 @@ func (machine *EnigmaMachine) Encrypt(plaintext string) string {
 			}
 
 			// Pass the letter through the reflector
-			inputIndex = machine.reflector[inputIndex]
+			inputIndex = machine.reflector.wiring[inputIndex]
 
 			// Go back through the rotors from left to right. Use the inverse of the wiring to decode
 			// This is repetative code, but I like it because it breaks the encryption stages into the same
 			// stages as the physical machine. Its nice to see each step distinctly.
 
-			for i := range machine.rotors {
-				rotor := machine.rotors[len(machine.rotors)-1-i]
+			for i := range rotors {
+				rotor := rotors[len(rotors)-1-i]
 
 				// I think I can use my encodeLeft logic here instead. But this was easier to trace
 				wiringInverse := generateInverseWiring(rotor.wiring)
@@ -91,7 +109,7 @@ func (machine *EnigmaMachine) Encrypt(plaintext string) string {
 			// Out the input rotor for the Final Encipherment. We do this because we can change the input rotor in our model.
 			// There were different input rotor configurations between some variations of the machines. Particularly the input wiring
 			// for of the commerical and military machines. These were a fixed part of the machine and not interchangeable.
-			cipherText = cipherText + machine.inputRotor[inputIndex]
+			cipherText = cipherText + machine.inputRotor.wiring[inputIndex]
 		}
 
 	}
@@ -100,39 +118,64 @@ func (machine *EnigmaMachine) Encrypt(plaintext string) string {
 }
 
 //SetRotorPosition set a rotor to a position. Used in initial machine setup.
-func (machine *EnigmaMachine) SetRotorPosition(rotorNumber int, startPos rune) {
+func (machine *EnigmaMachine) SetRotorPosition(rotorPos string, startPos rune) {
 	p := unicode.ToUpper(startPos)
 	pos := int(p) - 65
 
-	machine.rotors[rotorNumber].CurrentIndicator = pos
+	// There might be a clever Go way of doing this...
+	rp := strings.ToUpper(rotorPos)
+
+	switch rp {
+	case "LEFT":
+		machine.rotors.left.CurrentIndicator = pos
+	case "MIDDLE":
+		machine.rotors.middle.CurrentIndicator = pos
+	case "RIGHT":
+		machine.rotors.right.CurrentIndicator = pos
+	case "FORTH":
+		if machine.rotors.forth != nil {
+			machine.rotors.forth.CurrentIndicator = pos
+		}
+	}
 }
 
 // RotateRotors rotates the rotors in accordance with the setup
 func (machine *EnigmaMachine) RotateRotors() error {
 
+	// Build the rotors array from the rotor set
+	var rotors []*Rotor
+
+	// Construct the rotors array from the machines rotors
+	if machine.rotors.forth != nil {
+		rotors = []*Rotor{machine.rotors.right, machine.rotors.middle, machine.rotors.left, machine.rotors.forth}
+
+	} else {
+		rotors = []*Rotor{machine.rotors.right, machine.rotors.middle, machine.rotors.left}
+	}
+
 	// TODO: Add test for double turnover
 
-	// A machine must have at least 3 rotors to be valid. Check for that here
-	if len(machine.rotors) < 3 {
+	// A machine must have at least 3 rotors to be valid. Check for that here. Probably dont need to
+	// do this for this version
+	if len(rotors) < 3 {
 		return errors.New("Not enough rotors installed in the machine")
 	}
 
 	// The right most rotor always rotates
-	machine.rotors[RIGHTROTOR].WillRotate = true
+	rotors[RIGHTROTOR].WillRotate = true
 
-	for rotorNum, rotor := range machine.rotors {
+	for rotorNum, rotor := range rotors {
 
 		CurrentIndicatorChar := string(toChar(rotor.CurrentIndicator))
 		// If a rotor is at its turnover point and it will rotate, then trigger a rotate of the rotor to the left
 		if (CurrentIndicatorChar == rotor.TurnOverPoint) && rotor.WillRotate {
 			// Dont attempt to rotate anything if the current rotor is the left most
-			if rotorNum+1 < len(machine.rotors) {
-				machine.rotors[rotorNum+1].WillRotate = true
+			if rotorNum+1 < len(rotors) {
+				rotors[rotorNum+1].WillRotate = true
 			}
 		}
 
 		if rotor.WillRotate {
-
 			newIndictor := (rotor.CurrentIndicator + 1) % 26
 			rotor.CurrentIndicator = newIndictor
 			rotor.WillRotate = false
