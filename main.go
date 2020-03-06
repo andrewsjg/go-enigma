@@ -23,11 +23,13 @@ func main() {
 	rotors.right = &rotor1
 
 	//Empty straight through plugboard
-	straightThroughPlugBoard := Plugboard{map[string]string{"A": "A"}}
+	straightThroughPlugBoard := Plugboard{map[string]string{}}
 
-	em := CreateEnigmaMachine(rotors, "AAA", straightThroughPlugBoard, GenerateReflectorB(), GenerateMilitaryInputRotor())
+	em, err := CreateEnigmaMachine(rotors, "AAA", straightThroughPlugBoard, GenerateReflectorB(), GenerateMilitaryInputRotor())
 
-	//em := EnigmaMachine{rotors, []string{"A", "A", "A"}, straightThroughPlugBoard, GenerateReflectorB(), GenerateMilitaryInputRotor()}
+	if err != nil {
+		log.Fatal("There was an issue creating the machine: " + err.Error())
+	}
 
 	// Some testing for the rotor encoding logic.
 	log.Println("Testing Rotor Encoding")

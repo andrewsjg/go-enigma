@@ -16,8 +16,13 @@ func createTestMachine() EnigmaMachine {
 	rotors.middle = &r2
 	rotors.right = &r3
 
-	straightThroughPlugBoard := Plugboard{map[string]string{"A": "A"}}
-	em := CreateEnigmaMachine(rotors, "AAA", straightThroughPlugBoard, GenerateReflectorA(), GenerateMilitaryInputRotor())
+	straightThroughPlugBoard := Plugboard{map[string]string{}}
+	em, err := CreateEnigmaMachine(rotors, "AAA", straightThroughPlugBoard, GenerateReflectorA(), GenerateMilitaryInputRotor())
+
+	if err != nil {
+		panic(err)
+	}
+
 	return em
 }
 
@@ -33,9 +38,13 @@ func createMilitaryMachine() EnigmaMachine {
 	rotors.middle = &r2
 	rotors.right = &r3
 
-	straightThroughPlugBoard := Plugboard{map[string]string{"A": "A"}}
+	straightThroughPlugBoard := Plugboard{map[string]string{}}
 
-	em := CreateEnigmaMachine(rotors, "AAA", straightThroughPlugBoard, GenerateReflectorB(), GenerateMilitaryInputRotor())
+	em, err := CreateEnigmaMachine(rotors, "AAA", straightThroughPlugBoard, GenerateReflectorB(), GenerateMilitaryInputRotor())
+
+	if err != nil {
+		panic(err)
+	}
 	return em
 }
 

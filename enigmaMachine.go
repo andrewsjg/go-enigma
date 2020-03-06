@@ -23,7 +23,6 @@ type Plugboard struct {
 type EnigmaMachine struct {
 	rotors RotorSet
 
-	// Not yet implemented
 	plugBoard Plugboard
 
 	reflector Reflector
@@ -34,11 +33,10 @@ type EnigmaMachine struct {
 }
 
 // CreateEnigmaMachine - Create an enigma machine wired up as specified
-func CreateEnigmaMachine(rotors RotorSet, rotorStartPosition string, plugBoard Plugboard, reflector Reflector, inputRotor InputRotor) EnigmaMachine {
+func CreateEnigmaMachine(rotors RotorSet, rotorStartPosition string, plugBoard Plugboard, reflector Reflector, inputRotor InputRotor) (EnigmaMachine, error) {
 	var em EnigmaMachine
 
 	em.rotors = rotors
-	em.plugBoard = plugBoard
 	em.reflector = reflector
 	em.inputRotor = inputRotor
 
@@ -59,7 +57,21 @@ func CreateEnigmaMachine(rotors RotorSet, rotorStartPosition string, plugBoard P
 			em.SetRotorPosition("FORTH", r)
 		}
 	}
-	return em
+
+	// Check for an impossible plugboard configuration. Each letter can only be wired once. A configuration like A<->B and B<->C is is impossible
+	// So check that any values dont appear as keys in our plugboard.wiring map
+
+	for _, val := range plugBoard.wiring {
+		for innerKey := range plugBoard.wiring {
+			if val == innerKey {
+				return em, errors.New("Impossible plugboard setting. Check that no letter is plugged twice or plugged to itself")
+			}
+		}
+	}
+
+	em.plugBoard = plugBoard
+
+	return em, nil
 }
 
 // Encrypt some text
