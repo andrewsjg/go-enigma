@@ -82,6 +82,16 @@ func (machine *EnigmaMachine) Encrypt(plaintext string) string {
 	cipherText := ""
 	cIdx := -1
 
+	// Reverse the plugboard map so we can go from a value to a key as well as key to value. Do this here so that we dont
+	// need to iterate through the map on each iteration of the loop below
+
+	var reversePlugBoard map[string]string
+	reversePlugBoard = make(map[string]string)
+
+	for key, val := range machine.plugBoard.wiring {
+		reversePlugBoard[val] = key
+	}
+
 	for _, r := range plaintext {
 
 		// Ignore anything that isnt a letter of the alphabet
@@ -91,7 +101,13 @@ func (machine *EnigmaMachine) Encrypt(plaintext string) string {
 
 			inputLetter := string(r)
 
-			//TODO: Translate the inputLetter through the plugboard here
+			// We need to translate the letter through the plugboard here
+
+			if val, plugged := machine.plugBoard.wiring[inputLetter]; plugged {
+				inputLetter = val
+			} else if val, plugged := reversePlugBoard[inputLetter]; plugged {
+				inputLetter = val
+			}
 
 			// Find the index of the letter in the entry wheel. The commerical and military enigma's had different entry wheels
 			// For this implementation we can also make any wiring on the entry wheel.
@@ -136,10 +152,20 @@ func (machine *EnigmaMachine) Encrypt(plaintext string) string {
 
 			}
 
+			outputLetter = machine.inputRotor.wiring[inputIndex]
+
+			// Back through the plugboard
+
+			if val, plugged := reversePlugBoard[outputLetter]; plugged {
+				outputLetter = val
+			} else if val, plugged := machine.plugBoard.wiring[outputLetter]; plugged {
+				outputLetter = val
+			}
+
 			// Out the input rotor for the Final Encipherment. We do this because we can change the input rotor in our model.
 			// There were different input rotor configurations between some variations of the machines. Particularly the input wiring
 			// for of the commerical and military machines. These were a fixed part of the machine and not interchangeable.
-			cipherText = cipherText + machine.inputRotor.wiring[inputIndex]
+			cipherText = cipherText + outputLetter
 		}
 
 	}

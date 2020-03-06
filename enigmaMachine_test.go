@@ -89,6 +89,20 @@ func TestEncryptDecrypt(t *testing.T) {
 
 }
 
+func TestPlugBoard(t *testing.T) {
+	em := createMilitaryMachine()
+
+	// Create a plugboard mapping
+	em.plugBoard = Plugboard{map[string]string{"A": "E", "B": "D", "C": "F"}}
+
+	enc := em.Encrypt("AAAAA")
+
+	if enc != "CLFWR" {
+		t.Errorf("Encryption with plugboard mapping Failed. Expected CLFWR, got %s ", enc)
+	}
+
+}
+
 func TestSetRotorPosition(t *testing.T) {
 	em := createTestMachine()
 	em.SetRotorPosition("middle", 'K')
