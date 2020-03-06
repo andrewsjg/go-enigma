@@ -25,7 +25,9 @@ func main() {
 	//Empty straight through plugboard
 	straightThroughPlugBoard := Plugboard{map[string]string{"A": "A"}}
 
-	em := EnigmaMachine{rotors, []string{"A", "A", "A"}, straightThroughPlugBoard, GenerateReflectorB(), GenerateMilitaryInputRotor()}
+	em := CreateEnigmaMachine(rotors, "AAA", straightThroughPlugBoard, GenerateReflectorB(), GenerateMilitaryInputRotor())
+
+	//em := EnigmaMachine{rotors, []string{"A", "A", "A"}, straightThroughPlugBoard, GenerateReflectorB(), GenerateMilitaryInputRotor()}
 
 	// Some testing for the rotor encoding logic.
 	log.Println("Testing Rotor Encoding")
@@ -33,9 +35,6 @@ func main() {
 	fmt.Println("Left:  " + em.rotors.right.EncodeLeft("A"))
 
 	log.Println("Testing Encryption")
-	em.SetRotorPosition("left", 'A')
-	em.SetRotorPosition("middle", 'A')
-	em.SetRotorPosition("right", 'A')
 
 	fmt.Println("ENCRYPTED: " + em.Encrypt("AAAAA")) // This should produce  BDZGO
 

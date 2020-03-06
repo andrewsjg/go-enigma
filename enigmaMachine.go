@@ -23,8 +23,6 @@ type Plugboard struct {
 type EnigmaMachine struct {
 	rotors RotorSet
 
-	rotorStartPosition []string
-
 	// Not yet implemented
 	plugBoard Plugboard
 
@@ -35,7 +33,39 @@ type EnigmaMachine struct {
 	inputRotor InputRotor
 }
 
+// CreateEnigmaMachine - Create an enigma machine wired up as specified
+func CreateEnigmaMachine(rotors RotorSet, rotorStartPosition string, plugBoard Plugboard, reflector Reflector, inputRotor InputRotor) EnigmaMachine {
+	var em EnigmaMachine
+
+	em.rotors = rotors
+	em.plugBoard = plugBoard
+	em.reflector = reflector
+	em.inputRotor = inputRotor
+
+	// This might look a bit silly. If we used numbered rotors in an array then it would be a simple loop
+	// but we use a struct with named rotors to make things closer to a real enigma machine so we
+	// have to do some funky translation here to make this work.
+
+	for rotNum, r := range rotorStartPosition {
+
+		switch rotNum {
+		case 0:
+			em.SetRotorPosition("LEFT", r)
+		case 1:
+			em.SetRotorPosition("MIDDLE", r)
+		case 2:
+			em.SetRotorPosition("RIGHT", r)
+		case 3:
+			em.SetRotorPosition("FORTH", r)
+		}
+	}
+	return em
+}
+
+// Encrypt some text
 func (machine *EnigmaMachine) Encrypt(plaintext string) string {
+
+	//TODO: Return text in blocks of 5 letters
 
 	var rotors []*Rotor
 

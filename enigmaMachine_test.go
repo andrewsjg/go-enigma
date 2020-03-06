@@ -17,7 +17,8 @@ func createTestMachine() EnigmaMachine {
 	rotors.right = &r3
 
 	straightThroughPlugBoard := Plugboard{map[string]string{"A": "A"}}
-	return EnigmaMachine{rotors, []string{"A", "A", "A"}, straightThroughPlugBoard, GenerateReflectorA(), GenerateMilitaryInputRotor()}
+	em := CreateEnigmaMachine(rotors, "AAA", straightThroughPlugBoard, GenerateReflectorA(), GenerateMilitaryInputRotor())
+	return em
 }
 
 // Create test machine with 3 test rotors
@@ -34,7 +35,8 @@ func createMilitaryMachine() EnigmaMachine {
 
 	straightThroughPlugBoard := Plugboard{map[string]string{"A": "A"}}
 
-	return EnigmaMachine{rotors, []string{"A", "A", "A"}, straightThroughPlugBoard, GenerateReflectorB(), GenerateMilitaryInputRotor()}
+	em := CreateEnigmaMachine(rotors, "AAA", straightThroughPlugBoard, GenerateReflectorB(), GenerateMilitaryInputRotor())
+	return em
 }
 
 func TestEncryption(t *testing.T) {
