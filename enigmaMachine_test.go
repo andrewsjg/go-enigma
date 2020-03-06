@@ -2,6 +2,8 @@ package main
 
 import (
 	"testing"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Create test machine with 3 test rotors
@@ -20,7 +22,7 @@ func createTestMachine() EnigmaMachine {
 	em, err := CreateEnigmaMachine(rotors, "AAA", straightThroughPlugBoard, GenerateReflectorA(), GenerateMilitaryInputRotor())
 
 	if err != nil {
-		panic(err)
+		log.Fatal("There was an issue creating the machine: " + err.Error())
 	}
 
 	return em
@@ -43,7 +45,7 @@ func createMilitaryMachine() EnigmaMachine {
 	em, err := CreateEnigmaMachine(rotors, "AAA", straightThroughPlugBoard, GenerateReflectorB(), GenerateMilitaryInputRotor())
 
 	if err != nil {
-		panic(err)
+		log.Fatal("There was an issue creating the machine: " + err.Error())
 	}
 	return em
 }
