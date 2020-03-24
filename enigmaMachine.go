@@ -121,7 +121,7 @@ func (machine *EnigmaMachine) Encrypt(plaintext string) string {
 				inputLetter = val
 			}
 
-			// Find the index of the letter in the entry wheel. The commerical and military enigma's had different entry wheels
+			// Find the index of the letter in the entry wheel. The commercial and military enigma's had different entry wheels
 			// For this implementation we can also make any wiring on the entry wheel.
 			// This gives us the terminal on the entry wheel so we know where the signal enters the first (right most) rotor.
 
@@ -176,7 +176,7 @@ func (machine *EnigmaMachine) Encrypt(plaintext string) string {
 
 			// Out the input rotor for the Final Encipherment. We do this because we can change the input rotor in our model.
 			// There were different input rotor configurations between some variations of the machines. Particularly the input wiring
-			// for of the commerical and military machines. These were a fixed part of the machine and not interchangeable.
+			// for of the commercial and military machines. These were a fixed part of the machine and not interchangeable.
 			cipherText = cipherText + outputLetter
 		}
 
