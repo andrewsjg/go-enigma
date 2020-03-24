@@ -92,7 +92,7 @@ func (machine *EnigmaMachine) Encrypt(plaintext string) string {
 	// Make everything uppercase
 	plaintext = strings.ToUpper(plaintext)
 	cipherText := ""
-	cIdx := -1
+	//cIdx := -1
 
 	// Reverse the plugboard map so we can go from a value to a key as well as key to value. Do this here so that we dont
 	// need to iterate through the map on each iteration of the loop below
