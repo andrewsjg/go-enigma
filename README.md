@@ -1,3 +1,5 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/andrewsjg/go-enigma)](https://goreportcard.com/report/github.com/andrewsjg/go-enigma)
+
 # go-enigma
 A Golang implementation of an Enigma machine. Designed to understand how the machine worked
 
