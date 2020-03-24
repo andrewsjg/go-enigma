@@ -8,7 +8,7 @@ package main
 // Rotor type represents an enigma machine rotor
 type Rotor struct {
 	// The index of the wiring slice represents 1 terminal on the rotor, the value at each index is the output letter associated with that terminal.
-	// For this verison a string is used to make it easier to visualise and read (for me!), however it would probably be simpler in the implementation to use integers
+	// For this version a string is used to make it easier to visualise and read (for me!), however it would probably be simpler in the implementation to use integers
 	wiring [26]string
 
 	ringOffset    int    // How far offset from position 1 on the rotor is the alphabet ring. This is used to map the indicator to wiring for cipher operations
