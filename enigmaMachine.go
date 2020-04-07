@@ -135,7 +135,7 @@ func (machine *EnigmaMachine) Encrypt(plaintext string) string {
 
 				// Find the ciphertext letter in the wiring array. Use the alphabet ring offset and the current position of the rotort find the letter output by
 				// the rotors wiring
-				cIdx = (inputIndex - rotor.ringOffset + rotor.CurrentIndicator) % 26
+				cIdx := (inputIndex - rotor.ringOffset + rotor.CurrentIndicator) % 26
 				outputLetter = rotor.wiring[cIdx]
 
 				// The input for the next rotor is the output index the letter based on the rotor wiring.
