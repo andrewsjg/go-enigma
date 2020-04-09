@@ -254,6 +254,25 @@ func (machine *EnigmaMachine) RotateRotors() error {
 	return nil
 }
 
+// PrettyCrypt encrypts a string and outputs it in blocks of 5 letters.
+func (machine *EnigmaMachine) PrettyCrypt(inputText string) string {
+	rawOut := machine.Encrypt(inputText)
+
+	prettyOutput := ""
+
+	for chNum, chr := range rawOut {
+
+		if chNum%5 == 0 {
+			prettyOutput = prettyOutput + " "
+		}
+
+		prettyOutput = prettyOutput + string(chr)
+
+	}
+
+	return prettyOutput
+}
+
 // Helper function to return the next input terminal according to the wiring array
 func getNextInputTerminal(r Rotor, currentInputTerminal string) string {
 	currentIndex := sliceIndex(len(r.wiring), func(i int) bool { return r.wiring[i] == currentInputTerminal })
