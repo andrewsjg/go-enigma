@@ -4,6 +4,8 @@ package main
 
 import (
 	"errors"
+	"io/ioutil"
+	"os"
 	"strings"
 	"unicode"
 )
@@ -271,6 +273,51 @@ func (machine *EnigmaMachine) PrettyCrypt(inputText string) string {
 	}
 
 	return prettyOutput
+}
+
+// EncryptFromFile takes a input file as the plain text input and writes to and output file
+func (machine *EnigmaMachine) EncryptFromFile(inputFileName string, outputFileName string) error {
+	file, err := os.Open(inputFileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	outfile, err := os.Create("ciphertext.txt")
+
+	if err != nil {
+		return err
+	}
+	defer outfile.Close()
+
+	pt, err := ioutil.ReadAll(file)
+
+	outNum := 0
+	groupNum := 1
+
+	for _, char := range pt {
+		//Convert Char to Uppercase
+		upperCaseLetter := unicode.ToUpper(rune(char))
+
+		if int(upperCaseLetter) >= 65 && int(upperCaseLetter) <= 90 {
+			outNum = outNum + 1
+
+			if outNum%5 == 0 {
+				groupNum = groupNum + 1
+
+				if groupNum%8 == 0 {
+					outfile.WriteString(machine.Encrypt(string(upperCaseLetter)) + "\n")
+				} else {
+					outfile.WriteString(machine.Encrypt(string(upperCaseLetter)) + " ")
+				}
+
+			} else {
+				outfile.WriteString(machine.Encrypt(string(upperCaseLetter)))
+			}
+		}
+	}
+
+	return nil
 }
 
 // Helper function to return the next input terminal according to the wiring array

@@ -49,4 +49,11 @@ func main() {
 	lorum := "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure do"
 
 	fmt.Println("LORUM: " + em.PrettyCrypt(lorum))
+
+	// Encrypt from file test
+	err = em.EncryptFromFile("shakespeare.txt", "ciphertext.txt")
+	if err != nil {
+		fmt.Println("There was an error: " + err.Error())
+	}
+
 }

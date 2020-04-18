@@ -16,3 +16,7 @@
 
 # Exclude the binary
 go-enigma
+
+#Exclude some of my test and output files
+ciphertext.txt
+shakespeare.txt
